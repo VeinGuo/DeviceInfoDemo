@@ -25,6 +25,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var cpu: NSTextField!
     @IBOutlet weak var ARM: NSTextField!
     @IBOutlet weak var uuid: NSTextField!
+    @IBOutlet weak var graphicCard: NSTextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +43,9 @@ class ViewController: NSViewController {
         cpu.stringValue = Device.CPU.brand
         ARM.stringValue = "\(Device.RAM.ramSize)G"
         uuid.stringValue = Device.UUID ?? ""
+        
+        graphicCard.stringValue = Device.graphicCard ?? ""
+        
     }
 
     func platform() -> String? {

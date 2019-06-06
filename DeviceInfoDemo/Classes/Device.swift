@@ -100,6 +100,30 @@ class Device {
         return nil
     }
     
+    static var graphicCard: String? {
+        let dev = IOServiceMatching("IOPCIDevice")
+        var iterator: io_iterator_t = 0
+        if IOServiceGetMatchingServices(kIOMasterPortDefault, dev, &iterator) == kIOReturnSuccess {
+            while case let serialPort = IOIteratorNext(iterator), serialPort != 0 {
+                var serviceDictionary: Unmanaged<CFMutableDictionary>?
+                if IORegistryEntryCreateCFProperties(serialPort, &serviceDictionary, kCFAllocatorDefault, 0) != kIOReturnSuccess {
+                    IOObjectRelease(serialPort);
+                    continue
+                }
+                
+                if let dic = serviceDictionary?.takeUnretainedValue() as? [String: Any],
+                    let GPUModel = dic["model"] {
+                    if CFGetTypeID(GPUModel as CFTypeRef) == CFDataGetTypeID() {
+                        let modelName = String(data: (GPUModel as! CFData) as Data, encoding: .ascii)
+                        return modelName
+                    }
+                }
+            }
+        }
+
+        return nil
+    }
+    
     static var diskSize: String? {
         do {
             let dic = try FileManager.default.attributesOfFileSystem(forPath: "/")
